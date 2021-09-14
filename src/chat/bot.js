@@ -90,6 +90,8 @@ bot.command('actualizar', async (ctx) => {
       return bot.telegram.sendMessage(ctx.chat.id, 'Formato no valido')
     }
     // obtenemos la carpeta de vimeo
+    try{
+      console.log()
     const data = await axios({
       method: 'GET',
       url: `https://api.vimeo.com/users/${process.env.VIMEO_ID}/projects/${teacherID[params[1]]}/videos`,
@@ -133,7 +135,12 @@ bot.command('actualizar', async (ctx) => {
         await newVideo.save()
       }
     })
+
     return bot.telegram.sendMessage(ctx.chat.id, 'Actualizado exitosamente')
+  } catch(e) {
+    console.log(e)
+    bot.telegram.sendMessage(ctx.chat.id, e)
+  }
   }
 })
 
