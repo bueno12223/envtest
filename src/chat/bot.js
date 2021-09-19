@@ -4,6 +4,7 @@ import { v1 } from 'id-creator'
 import axios from 'axios'
 import TelegramSchema from '../models/telegram.js'
 import { StudentSchema, VideoSchema } from '../models/index.js'
+import VideosSchemanew from '../models/video'
 import { banUserById } from '../tasks/deleteUser.js'
 // unirse al canal
 
@@ -91,10 +92,9 @@ bot.command('actualizar', async (ctx) => {
     }
     // obtenemos la carpeta de vimeo
     try{
-      console.log()
     const data = await axios({
       method: 'GET',
-      url: `https://api.vimeo.com/users/${process.env.VIMEO_ID}/projects/${teacherID[params[1]]}/videos`,
+      url: `https://api.vimeo.com/users/${process.env.VIMEO_ID}/projects/${teacherID[params[1] - 1]}/videos`,
       headers: {
         'Content-type': 'application/json',
         Authorization: `Bearer ${process.env.VIMEO_TOKEN}`
@@ -122,9 +122,10 @@ bot.command('actualizar', async (ctx) => {
       // si hay un error ya existe, entonces actualizamos
       const exist = await VideoSchema.findOne({ key })
       if (exist) {
+        console.log(exist)
         await VideoSchema.findOneAndUpdate({ key },{ $set: { title, description, profesor_id: profesorID, order }})
       } else {
-        const newVideo = new VideoSchema({
+        const newVideo = new VideosSchemanew({
           title,
           description,
           key,
@@ -132,6 +133,7 @@ bot.command('actualizar', async (ctx) => {
           profesor_id: profesorID,
           order
         })
+        console.log('nuevo video' + key)
         await newVideo.save()
       }
     })
